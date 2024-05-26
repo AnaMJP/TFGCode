@@ -33,11 +33,11 @@ class MainApp:
                     self.process_file(file_name)
             self.plotter.close()
         else:
-            n_files = len([f for f in files if "_L_" in f])
+            n_files = len([f for f in files[:10] if "_L_" in f])
             self.plotter.create_acc_subplots(n_files // 2 + 1, 2, 'Aceleracion')
             self.plotter.create_vel_subplots(n_files // 2 + 1, 2, 'Velocidad')
             idx = 0
-            for file_name in files:
+            for file_name in files[:10]:
                 if "_L_" in file_name:
                     self.process_file_subplot(file_name, idx)
                     idx += 1
@@ -91,6 +91,6 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    app = MainApp(directory='../Organizados/female/3', output_format='pdf', output_path='../pruebas/grafica_NoSanos_female_conjunto5.pdf')
+    app = MainApp(directory='../Organizados/female/9', output_format='fig', output_path='../pruebas/grafica_NoSanos_female_conjunto5.pdf')
     app.run()
 

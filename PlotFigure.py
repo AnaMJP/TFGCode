@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from DataAnalyzer import DataAnalyzer
 
 class PlotFigure:
     def __init__(self):
@@ -6,6 +7,7 @@ class PlotFigure:
         self.acc_axs = None
         self.vel_fig = None
         self.vel_axs = None
+        self.analyzer = DataAnalyzer()
 
     def create_acc_subplots(self, nrows, ncols, suptitle):
         self.acc_fig, self.acc_axs = plt.subplots(nrows, ncols, figsize=(15, nrows * 6))
@@ -25,9 +27,14 @@ class PlotFigure:
         ax.legend()
 
         if start is not None and end is not None:
-            ax.plot(t[start:end], filtered_A[start:end], 'g', label='Aceleracion (Cortada)')
-            ax.plot(t[start:end], g[start:end], 'b', label='Aceleracion gravitacional (Cortada)')
+            ax.plot(t[start:end], filtered_A[start:end], 'r', label='Aceleracion (Cortada)')
+            ax.plot(t[start:end], g[start:end], 'r', label='Aceleracion gravitacional (Cortada)')
             ax.legend()
+            peaks = self.analyzer.find_peaks(filtered_A[start:end])
+            peak_indices = self.analyzer.show_peaks(filtered_A[start:end])
+            ax.plot(t[start:end][peak_indices], filtered_A[start:end][peak_indices], 'ro', markersize=5)
+
+            print(f"{title}: {peaks} picos\n")
 
     def plot_velocity(self, t, Vt, title, start=None, end=None, ax=None):
         ax.plot(t, Vt * 100, label='Velocidad')

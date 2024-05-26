@@ -2,8 +2,13 @@ import numpy as np
 
 class DataAnalyzer:
     def find_peaks(self, data):
-        peaks = (data.shift(1) < data) & (data.shift(-1) < data)
+        peaks = (np.roll(data, 1) < data) & (np.roll(data, -1) < data)
         return peaks.sum()
+
+    def show_peaks(self, data):
+        peaks = (np.roll(data, 1) < data) & (np.roll(data, -1) < data)
+        peak_indexs = np.where(peaks)[0]
+        return peak_indexs
 
     def cut_data(self, filtered_A, t):
         indice_maximo = np.where(filtered_A == filtered_A.max())[0][0]
