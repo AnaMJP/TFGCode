@@ -20,10 +20,7 @@ class PlotPdf:
             plt.legend()
 
         plt.tight_layout()
-        if self.output_format == 'pdf':
-            self.pdf_pages.savefig()
-        else:
-            plt.show()
+        self.pdf_pages.savefig()
 
     def plot_velocity(self, t, Vt, title):
         plt.figure()

@@ -31,14 +31,18 @@ class MainApp:
             for file_name in files:
                 if "_L_" in file_name:
                     self.process_file(file_name)
+            self.plotter.close()
         else:
-            self.plotter.create_subplots(len(files) // 2 + 1, 2, 'Aceleracion')
-            for i, file_name in enumerate(files):
+            n_files = len([f for f in files if "_L_" in f])
+            self.plotter.create_acc_subplots(n_files // 2 + 1, 2, 'Aceleracion')
+            self.plotter.create_vel_subplots(n_files // 2 + 1, 2, 'Velocidad')
+            idx = 0
+            for file_name in files:
                 if "_L_" in file_name:
-                    self.process_file_subplot(file_name, i)
+                    self.process_file_subplot(file_name, idx)
+                    idx += 1
             self.plotter.show()
 
-        self.plotter.close()
         print(f'Amplitudes: {self.amplitudes}')
 
     def process_file(self, file_name):
@@ -54,14 +58,14 @@ class MainApp:
         filtered_A3 = self.filter.butter_lowpass_filter(A3)
         filtered_A = self.processor.calculate_acceleration(t, filtered_A1, filtered_A2, filtered_A3)
 
-        inicio, fin = self.analyzer.cut_data(filtered_A, t)
-        self.plotter.plot_data(t, filtered_A, g, "Aceleración\n" + file_name, start=inicio, end=fin)
+        start, end = self.analyzer.cut_data(filtered_A, t)
+        self.plotter.plot_data(t, filtered_A, g, "Aceleración\n" + file_name, start=start, end=end)
 
-        self.amplitudes.append(filtered_A[inicio])
+        self.amplitudes.append(filtered_A[start])
 
         Vx, Vy, Vz = self.processor.calculate_velocity(t, filtered_A1, filtered_A2, filtered_A3)
         Vt = np.sqrt((np.diff(Vx) / np.diff(t)) ** 2 + (np.diff(Vy) / np.diff(t)) ** 2 + (np.diff(Vz) / np.diff(t)) ** 2)
-        self.plotter.plot_velocity(t[:-1], Vt, "Velocidad\n" + file_name)
+        self.plotter.plot_velocity(t[:-1], Vt, "Velocidad\n" + file_name, start=start, end=end)
 
     def process_file_subplot(self, file_name, idx):
         data = self.loader.load_data(file_name)
@@ -76,18 +80,17 @@ class MainApp:
         filtered_A3 = self.filter.butter_lowpass_filter(A3)
         filtered_A = self.processor.calculate_acceleration(t, filtered_A1, filtered_A2, filtered_A3)
 
+        start, end =  self.analyzer.cut_data(filtered_A, t)
         row, col = divmod(idx, 2)
-        self.plotter.plot_data(t, filtered_A, g, "Aceleración\n" + file_name, ax=self.plotter.axs[row, col])
+        self.plotter.plot_data(t, filtered_A, g, file_name, start=start, end=end, ax=self.plotter.acc_axs[row, col])
 
         Vx, Vy, Vz = self.processor.calculate_velocity(t, filtered_A1, filtered_A2, filtered_A3)
         Vt = np.sqrt((np.diff(Vx) / np.diff(t)) ** 2 + (np.diff(Vy) / np.diff(t)) ** 2 + (np.diff(Vz) / np.diff(t)) ** 2)
 
-        row, col = divmod(idx, 2)
-        self.plotter.plot_velocity(t[:-1], Vt, "Velocidad\n" + file_name, ax=self.plotter.axs[row, col])
-
+        self.plotter.plot_velocity(t[:-1], Vt, file_name, start=start, end=end, ax=self.plotter.vel_axs[row, col])
 
 
 if __name__ == "__main__":
-    app = MainApp(directory='../No Sanos/Female', output_format='fig', output_path='../pruebas/grafica_NoSanos_female_conjunto5.pdf')
+    app = MainApp(directory='../Organizados/female/3', output_format='pdf', output_path='../pruebas/grafica_NoSanos_female_conjunto5.pdf')
     app.run()
 
