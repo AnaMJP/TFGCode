@@ -30,11 +30,6 @@ class PlotFigure:
             ax.plot(t[start:end], filtered_A[start:end], 'r', label='Aceleracion (Cortada)')
             ax.plot(t[start:end], g[start:end], 'r', label='Aceleracion gravitacional (Cortada)')
             ax.legend()
-            peaks = self.analyzer.find_peaks(filtered_A[start:end])
-            peak_indices = self.analyzer.show_peaks(filtered_A[start:end])
-            ax.plot(t[start:end][peak_indices], filtered_A[start:end][peak_indices], 'ro', markersize=5)
-
-            print(f"{title}: {peaks} picos\n")
 
     def plot_velocity(self, t, Vt, title, start=None, end=None, ax=None):
         ax.plot(t, Vt * 100, label='Velocidad')
@@ -45,6 +40,8 @@ class PlotFigure:
         if start is not None and end is not None:
             ax.plot(t[start:end], Vt[start:end] * 100, 'r', label='Velocidad (Cortada)')
             ax.legend()
+           # peak_indices = self.analyzer.show_peaks(Vt[start:end])
+           # ax.plot(t[start:end][peak_indices], Vt[start:end][peak_indices]*100, 'ro', markersize=5)
 
     def show(self):
         if self.acc_fig is not None:
