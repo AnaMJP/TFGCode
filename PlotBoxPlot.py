@@ -43,55 +43,68 @@ class PlotBoxPlot:
         plt.close(fig)  # Cerrar la figura actual
 
     def plot_comparison_by_age(self, peak_counts_list, titles):
-        ages = sorted(
-            set().union(*[peak_counts.keys() for peak_counts in peak_counts_list]))  # Obtener todas las edades únicas
-        num_ages = len(ages)
-        fig, axs = plt.subplots(1, num_ages, figsize=(20, 10), sharey=True)
-        axs = axs.flatten()
+        plt.close('all')
+        for peak_list, title in zip(peak_counts_list, titles):
+            ages = sorted(
+                set().union(*[peak_counts.keys() for peak_counts in peak_list]))  # Obtener todas las edades únicas
+            num_ages = len(ages)
+            fig, axs = plt.subplots(1, num_ages, figsize=(20, 10), sharey=True)
+            axs = axs.flatten()
 
-        for ax, age in zip(axs, ages):
-            data = [peak_counts.get(age, []) for peak_counts in
-                    peak_counts_list]
+            for ax, age in zip(axs, ages):
+                data = [peak_counts.get(age, []) for peak_counts in
+                        peak_list]
 
-            # Mostrar el boxplot con medias
-            boxplot = ax.boxplot(data, patch_artist=True, notch=True, vert=True, showmeans=True)
+                # Mostrar el boxplot con medias
+                boxplot = ax.boxplot(data, patch_artist=True, notch=True, vert=True, showmeans=True)
 
-            ax.set_title(f'Age {age}')
-            ax.set_xlabel('Category', fontsize=12)
-            if ax == axs[0]:
-                ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
-            ax.set_xticklabels(titles, rotation=45, ha='right', fontsize=10)
-            ax.set_ylim(top=30, bottom=0)
+                ax.set_title(f'Age {age}')
+                ax.set_xlabel('Category', fontsize=12)
+                if ax == axs[0]:
+                    ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
+                ax.set_xticklabels(title, rotation=45, ha='right', fontsize=10)
+                ax.set_ylim(top=30, bottom=0)
 
-            # Calcular y mostrar los valores de la media, mediana y el número de archivos sobre cada boxplot
-            means = [np.mean(d) if len(d) > 0 else 0 for d in data]
-            medians = [np.median(d) if len(d) > 0 else 0 for d in data]
-            file_counts = [len(d) for d in data]
+                # Calcular y mostrar los valores de la media, mediana y el número de archivos sobre cada boxplot
+                means = [np.mean(d) if len(d) > 0 else 0 for d in data]
+                medians = [np.median(d) if len(d) > 0 else 0 for d in data]
+                file_counts = [len(d) for d in data]
 
-            for mean, median, count, xpos in zip(means, medians, file_counts, range(1, len(titles) + 1)):
-                ax.text(xpos, median, f' {median:.2f}', ha='center', va='top', color='orange')
-                ax.text(xpos, ax.get_ylim()[0] + 0.1, f'n={count}', ha='center', va='bottom', fontsize=10, color='blue')
+                for mean, median, count, xpos in zip(means, medians, file_counts, range(1, len(title) + 1)):
+                    ax.text(xpos, median, f' {median:.2f}', ha='center', va='top', color='orange')
+                    ax.text(xpos, ax.get_ylim()[0] + 0.1, f'n={count}', ha='center', va='bottom', fontsize=10, color='blue')
 
-        plt.tight_layout()
-        plt.show()
-        plt.close(fig)
+            plt.tight_layout()
+            plt.show()
+            plt.close(fig)
 
     def peaks_count_boxplot(self,files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
+        peak_counts_list = []
+        titles = []
         peak_counts_SanoFemale = self.diagnose.get_peak_counts_per_second(files_SanoFemale)
         peak_counts_NoSanoFemale = self.diagnose.get_peak_counts_per_second(files_NoSanoFemale)
         peak_counts_SanoMale = self.diagnose.get_peak_counts_per_second(files_SanoMale)
         peak_counts_NoSanoMale = self.diagnose.get_peak_counts_per_second(files_NoSanoMale)
 
-        peak_counts_list = [peak_counts_SanoFemale, peak_counts_NoSanoFemale, peak_counts_SanoMale, peak_counts_NoSanoMale]
-        titles = ['Sano female', 'No sano female', 'Sano male', 'No sano male']
+        peak_counts_list_female = [peak_counts_SanoFemale, peak_counts_NoSanoFemale]
+        peak_counts_list_male = [peak_counts_SanoMale, peak_counts_NoSanoMale]
 
-        for index, counts in reversed(list(enumerate(peak_counts_list))):
-            if len(counts) == 0:
-                peak_counts_list.pop(index)
-                titles.pop(index)
+        titles_female = ['Sano female', 'No sano female']
+        titles_male = ['Sano male', 'No sano male']
 
-        self.anova.perform_anova_on_peak_counts(peak_counts_list)
-        self.plot_comparison_by_age(peak_counts_list, titles)
+        if len(peak_counts_list_female[0]) != 0:
+            peak_counts_list.append(peak_counts_list_female)
+            titles.append(titles_female)
+
+        if len(peak_counts_list_male[0]) != 0:
+            peak_counts_list.append(peak_counts_list_male)
+            titles.append(titles_male)
+
+        if len(peak_counts_list) != 0:
+            self.anova.perform_anova_on_peak_counts(peak_counts_list)
+            self.plot_comparison_by_age(peak_counts_list, titles)
+        else:
+            print("No data")
 
     def close(self):
         plt.close(self.fig)
