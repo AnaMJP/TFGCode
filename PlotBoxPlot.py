@@ -42,7 +42,7 @@ class PlotBoxPlot:
         plt.show()
         plt.close(fig)  # Cerrar la figura actual
 
-    def plot_comparison_by_age(self, peak_counts_list, titles):
+    def plot_comparison_by_age(self, peak_counts_list, titles, ylim):
         plt.close('all')
         for peak_list, title in zip(peak_counts_list, titles):
             ages = sorted(
@@ -63,7 +63,7 @@ class PlotBoxPlot:
                 if ax == axs[0]:
                     ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
                 ax.set_xticklabels(title, rotation=45, ha='right', fontsize=10)
-                ax.set_ylim(top=30, bottom=0)
+                ax.set_ylim(top=ylim, bottom=0)
 
                 # Calcular y mostrar los valores de la media, mediana y el número de archivos sobre cada boxplot
                 means = [np.mean(d) if len(d) > 0 else 0 for d in data]
@@ -78,31 +78,41 @@ class PlotBoxPlot:
             plt.show()
             plt.close(fig)
 
-    def peaks_count_boxplot(self,files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
-        peak_counts_list = []
+    def peaks_count_boxplot(self, algorithm, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
+        counts_list = []
         titles = []
-        peak_counts_SanoFemale = self.diagnose.get_peak_counts_per_second(files_SanoFemale)
-        peak_counts_NoSanoFemale = self.diagnose.get_peak_counts_per_second(files_NoSanoFemale)
-        peak_counts_SanoMale = self.diagnose.get_peak_counts_per_second(files_SanoMale)
-        peak_counts_NoSanoMale = self.diagnose.get_peak_counts_per_second(files_NoSanoMale)
+        ylim = 0
 
-        peak_counts_list_female = [peak_counts_SanoFemale, peak_counts_NoSanoFemale]
-        peak_counts_list_male = [peak_counts_SanoMale, peak_counts_NoSanoMale]
+        if algorithm == "peaks_count":
+            counts_SanoFemale = self.diagnose.get_peak_counts_per_second(files_SanoFemale)
+            counts_NoSanoFemale = self.diagnose.get_peak_counts_per_second(files_NoSanoFemale)
+            counts_SanoMale = self.diagnose.get_peak_counts_per_second(files_SanoMale)
+            counts_NoSanoMale = self.diagnose.get_peak_counts_per_second(files_NoSanoMale)
+            ylim = 30
+        elif algorithm == "duration_counts":
+            counts_SanoFemale = self.diagnose.get_duration_per_age_group(files_SanoFemale)
+            counts_NoSanoFemale = self.diagnose.get_duration_per_age_group(files_NoSanoFemale)
+            counts_SanoMale = self.diagnose.get_duration_per_age_group(files_SanoMale)
+            counts_NoSanoMale = self.diagnose.get_duration_per_age_group(files_NoSanoMale)
+            ylim = 2
+
+        peak_counts_list_female = [counts_SanoFemale, counts_NoSanoFemale]
+        peak_counts_list_male = [counts_SanoMale, counts_NoSanoMale]
 
         titles_female = ['Sano female', 'No sano female']
         titles_male = ['Sano male', 'No sano male']
 
         if len(peak_counts_list_female[0]) != 0:
-            peak_counts_list.append(peak_counts_list_female)
+            counts_list.append(peak_counts_list_female)
             titles.append(titles_female)
 
         if len(peak_counts_list_male[0]) != 0:
-            peak_counts_list.append(peak_counts_list_male)
+            counts_list.append(peak_counts_list_male)
             titles.append(titles_male)
 
-        if len(peak_counts_list) != 0:
-            self.anova.perform_anova_on_peak_counts(peak_counts_list)
-            self.plot_comparison_by_age(peak_counts_list, titles)
+        if len(counts_list) != 0:
+            self.anova.perform_anova_on_peak_counts(counts_list)
+            self.plot_comparison_by_age(counts_list, titles, ylim)
         else:
             print("No data")
 

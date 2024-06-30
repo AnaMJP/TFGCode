@@ -17,7 +17,7 @@ class MainApp:
             self.plotter.show_plots(files_NoSanoFemale)
 
         elif self.output_format == 'boxplot':
-            self.plotter.peaks_count_boxplot(files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
+            self.plotter.peaks_count_boxplot("duration_counts", files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
 
 if __name__ == "__main__":
     app = MainApp(directories=['../Organizados2/Sano/female', '../Organizados2/No_Sano/female',

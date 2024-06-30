@@ -11,12 +11,13 @@ class AlgorithmsToDiagnose:
         peak_counts_per_second = {}
         for file in files:
             t, A, filtered_A = self.processor.calculate_acceleration(file)
+            t, Vt, filtered_Vt = self.processor.calculate_velocity(file)
 
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
             age_group = (int(age) // 2) * 2
 
-            num_peaks = self.analyzer.find_peaks(A[start:end])
+            num_peaks = self.analyzer.find_peaks(Vt[start:end]) + self.analyzer.find_peaks(A[start:end])
 
             duration = t[end] - t[start]
             peaks_per_second = num_peaks / duration
@@ -30,3 +31,22 @@ class AlgorithmsToDiagnose:
     def extract_age_from_filename(self, file_name):
         age = os.path.basename(os.path.dirname(os.path.dirname(file_name)))
         return age
+
+    def get_duration_per_age_group(self, files):
+        duration_per_age_group = {}
+        for file in files:
+            t, A, filtered_A = self.processor.calculate_acceleration(file)
+            t, Vt, filtered_Vt = self.processor.calculate_velocity(file)
+
+            start, end = self.analyzer.cut_data_max_value(filtered_A, t)
+            age = self.extract_age_from_filename(file)
+            age_group = (int(age) // 2) * 2
+
+            duration = t[end] - t[start]
+
+            if age_group not in duration_per_age_group:
+                duration_per_age_group[age_group] = []
+            duration_per_age_group[age_group].append(duration)
+
+        return duration_per_age_group
+
