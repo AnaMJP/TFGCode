@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 from DataAnalyzer import DataAnalyzer
 from DataProcessor import DataProcessor
 
@@ -18,7 +19,7 @@ class PlotFigure:
             folder = os.path.dirname(file)
             if folder not in first_files_per_folder:
                 first_files_per_folder[folder] = file
-        files = list(first_files_per_folder.values())[14:]
+        files = list(first_files_per_folder.values())[:10]
 
         n_files = len(files)
         self.create_acc_subplots(n_files // 2 + 1, 2, '')

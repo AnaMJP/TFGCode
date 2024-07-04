@@ -17,7 +17,7 @@ class DataAnalyzer:
 
     def max_value(self, file):
         t, A, filtered_A = self.processor.calculate_acceleration(file)
-        if A.max()*10 <= 50 :
+        if A.max()*10 <= 50 or t.max() < 2.9:
             return False
         return True
     def cut_data_min_max_values(self, filtered_A, t):

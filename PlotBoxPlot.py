@@ -3,6 +3,7 @@ import numpy as np
 from DataProcessor import DataProcessor
 from AlgorithmsToDiagnose import AlgorithmsToDiagnose
 from ANOVA import ANOVA
+from AlgorithmFactory import *
 
 class PlotBoxPlot:
     def __init__(self):
@@ -81,20 +82,11 @@ class PlotBoxPlot:
     def peaks_count_boxplot(self, algorithm, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
         counts_list = []
         titles = []
-        ylim = 0
 
-        if algorithm == "peaks_count":
-            counts_SanoFemale = self.diagnose.get_peak_counts_per_second(files_SanoFemale)
-            counts_NoSanoFemale = self.diagnose.get_peak_counts_per_second(files_NoSanoFemale)
-            counts_SanoMale = self.diagnose.get_peak_counts_per_second(files_SanoMale)
-            counts_NoSanoMale = self.diagnose.get_peak_counts_per_second(files_NoSanoMale)
-            ylim = 30
-        elif algorithm == "duration_counts":
-            counts_SanoFemale = self.diagnose.get_duration_per_age_group(files_SanoFemale)
-            counts_NoSanoFemale = self.diagnose.get_duration_per_age_group(files_NoSanoFemale)
-            counts_SanoMale = self.diagnose.get_duration_per_age_group(files_SanoMale)
-            counts_NoSanoMale = self.diagnose.get_duration_per_age_group(files_NoSanoMale)
-            ylim = 2
+        algorithm_execute = AlgorithmFactory.create_algorithm(algorithm, self.diagnose)
+        counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim = algorithm_execute.execute(
+            files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale
+        )
 
         peak_counts_list_female = [counts_SanoFemale, counts_NoSanoFemale]
         peak_counts_list_male = [counts_SanoMale, counts_NoSanoMale]
