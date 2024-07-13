@@ -43,9 +43,9 @@ class PlotBoxPlot:
         plt.show()
         plt.close(fig)  # Cerrar la figura actual
 
-    def plot_comparison_by_age(self, peak_counts_list, titles, ylim):
+    def plot_comparison_by_age(self, peak_counts_list, titles, ylim, genders):
         plt.close('all')
-        for peak_list, title in zip(peak_counts_list, titles):
+        for peak_list, title, gender in zip(peak_counts_list, titles, genders):
             ages = sorted(
                 set().union(*[peak_counts.keys() for peak_counts in peak_list]))  # Obtener todas las edades únicas
             num_ages = len(ages)
@@ -59,8 +59,7 @@ class PlotBoxPlot:
                 # Mostrar el boxplot con medias
                 boxplot = ax.boxplot(data, patch_artist=True, notch=True, vert=True, showmeans=True)
 
-                ax.set_title(f'Age {age}')
-                ax.set_xlabel('Category', fontsize=12)
+                ax.set_title(f'{gender}, edad: {age} - {age+4}')
                 if ax == axs[0]:
                     ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
                 ax.set_xticklabels(title, rotation=45, ha='right', fontsize=10)
@@ -79,32 +78,35 @@ class PlotBoxPlot:
             plt.show()
             plt.close(fig)
 
-    def peaks_count_boxplot(self, algorithm, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
+    def peaks_count_boxplot(self, algorithm, measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
         counts_list = []
         titles = []
+        genders = []
 
         algorithm_execute = AlgorithmFactory.create_algorithm(algorithm, self.diagnose)
         counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim = algorithm_execute.execute(
-            files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale
+            measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale
         )
 
         peak_counts_list_female = [counts_SanoFemale, counts_NoSanoFemale]
         peak_counts_list_male = [counts_SanoMale, counts_NoSanoMale]
 
-        titles_female = ['Sano female', 'No sano female']
-        titles_male = ['Sano male', 'No sano male']
+        titles_female = ['Neurotípico', 'Neurodivergente']
+        titles_male = ['Neurotípico', 'Neurodivergente']
 
         if len(peak_counts_list_female[0]) != 0:
             counts_list.append(peak_counts_list_female)
             titles.append(titles_female)
+            genders.append('Femenino')
 
         if len(peak_counts_list_male[0]) != 0:
             counts_list.append(peak_counts_list_male)
             titles.append(titles_male)
+            genders.append('Masculino')
 
         if len(counts_list) != 0:
             self.anova.perform_anova_on_peak_counts(counts_list)
-            self.plot_comparison_by_age(counts_list, titles, ylim)
+            self.plot_comparison_by_age(counts_list, titles, ylim, genders)
         else:
             print("No data")
 

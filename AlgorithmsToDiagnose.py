@@ -8,7 +8,32 @@ class AlgorithmsToDiagnose:
         self.analyzer = DataAnalyzer()
         self.processor = DataProcessor()
 
-    def get_peak_counts_per_second(self, files):
+    def get_peak_counts(self, files, measure):
+        peak_counts= {}
+        for file in files:
+            t, A, filtered_A = self.processor.calculate_acceleration(file)
+            t, Vt, filtered_Vt = self.processor.calculate_velocity(file)
+
+            start, end = self.analyzer.cut_data_max_value(filtered_A, t)
+            age = self.extract_age_from_filename(file)
+            age_group = (int(age) // 4) * 4
+
+            if age_group >= 18:
+                continue
+
+            if measure == "Velocity":
+                num_peaks = self.analyzer.find_peaks(Vt[start:end])
+            elif measure == "Acceleration":
+                num_peaks = self.analyzer.find_peaks(A[start:end])
+            else:
+                raise ValueError("Medida no válida. Debe ser 'Acceleration' o 'Velocity'.")
+
+            if age_group not in peak_counts:
+                peak_counts[age_group] = []
+            peak_counts[age_group].append(num_peaks)
+
+        return peak_counts
+    def get_peak_counts_per_seconds(self, files, measure):
         peak_counts_per_second = {}
         for file in files:
             t, A, filtered_A = self.processor.calculate_acceleration(file)
@@ -16,9 +41,17 @@ class AlgorithmsToDiagnose:
 
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
-            age_group = (int(age) // 2) * 2
+            age_group = (int(age) // 4) * 4
 
-            num_peaks = self.analyzer.find_peaks(Vt[start:end]) + self.analyzer.find_peaks(A[start:end])
+            if age_group >= 18:
+                continue
+
+            if measure == "Velocity":
+                num_peaks = self.analyzer.find_peaks(Vt[start:end])
+            elif measure == "Acceleration":
+                num_peaks = self.analyzer.find_peaks(A[start:end])
+            else:
+                raise ValueError("Medida no válida. Debe ser 'Acceleration' o 'Velocity'.")
 
             duration = t[end] - t[start]
             peaks_per_second = num_peaks / duration
@@ -41,7 +74,10 @@ class AlgorithmsToDiagnose:
 
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
-            age_group = (int(age) // 2) * 2
+            age_group = (int(age) // 4) * 4
+
+            if age_group >= 18:
+                continue
 
             duration = t[end] - t[start]
 

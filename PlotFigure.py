@@ -19,7 +19,7 @@ class PlotFigure:
             folder = os.path.dirname(file)
             if folder not in first_files_per_folder:
                 first_files_per_folder[folder] = file
-        files = list(first_files_per_folder.values())[:10]
+        files = list(first_files_per_folder.values())[:8]
 
         n_files = len(files)
         self.create_acc_subplots(n_files // 2 + 1, 2, '')
@@ -62,8 +62,8 @@ class PlotFigure:
 
         #ax.plot(t, g, 'b', label='Aceleracion gravitacional')
         ax.grid(True)
-        ax.set_xlabel('Tiempo (s)', fontsize=16)
-        ax.set_ylabel('Aceleración (m/s$^2$)', fontsize=16)
+        ax.set_xlabel('Tiempo (s)', fontsize=18)
+        ax.set_ylabel('Aceleración (m/s$^2$)', fontsize=18)
         ax.set_title(title)
         ax.legend(fontsize=12)
 
@@ -78,8 +78,8 @@ class PlotFigure:
 
         ax.grid(True)
         ax.set_title(title)
-        ax.set_xlabel('Tiempo (s)', fontsize=16)
-        ax.set_ylabel('Velocidad (m/s)', fontsize=16)
+        ax.set_xlabel('Tiempo (s)', fontsize=18)
+        ax.set_ylabel('Velocidad (m/s)', fontsize=18)
         ax.legend(fontsize=12)
 
         if start is not None and end is not None:

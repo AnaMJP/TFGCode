@@ -3,9 +3,11 @@ from FilesOrganizer import FilesOrganizer
 
 
 class MainApp:
-    def __init__(self, directories, output_format='fig'):
+    def __init__(self, directories, output_format='fig', algorithm="peaks_count", measure="velocity"):
         self.directories = directories
         self.output_format = output_format
+        self.algorithm = algorithm
+        self.measure = measure
 
         self.plotter = VisualizerFactory.create_visualizer(output_format)
         self.filesOrganizer = FilesOrganizer(directories)
@@ -13,12 +15,32 @@ class MainApp:
     def run(self):
         files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale = self.filesOrganizer.organize_by_gender()
         if self.output_format == 'fig':
-            self.plotter.show_plots(files_SanoFemale)
+            self.plotter.show_plots(files_SanoMale)
+        elif self.output_format == 'set':
+            self.plotter.show_plots_set(files_SanoFemale)
         elif self.output_format == 'boxplot':
-            self.plotter.peaks_count_boxplot("time_to_max_peak", files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
+            self.plotter.peaks_count_boxplot(self.algorithm, self.measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
 
+
+"""
+output_format:
+    * fig
+    * boxplot
+    * set
+Algorithms:
+Parámetro a aplicar para ver las diferencias
+    * peak_count: Numero de picos
+    * peaks_count_per_seconds: Numero de picos por tiempo de ejecucion
+    * duration_counts: tiempo total de ejecución
+    * time_to_max_peak: tiempo desde que se empieza al pico mas alto
+    
+Measure: 
+Medida usada para calcular
+    * Acceleration
+    * Velocity
+"""
 if __name__ == "__main__":
     app = MainApp(directories=['../Organizados2/Sano/female', '../Organizados2/No_Sano/female',
-                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='fig')
+                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="duration_counts", measure="Velocity")
     app.run()
 
