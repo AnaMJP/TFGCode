@@ -3,11 +3,12 @@ from FilesOrganizer import FilesOrganizer
 
 
 class MainApp:
-    def __init__(self, directories, output_format='fig', algorithm="peaks_count", measure="velocity"):
+    def __init__(self, directories, output_format='fig', algorithm="peaks_count", measure="velocity", yTitle=""):
         self.directories = directories
         self.output_format = output_format
         self.algorithm = algorithm
         self.measure = measure
+        self.yTitle = yTitle
 
         self.plotter = VisualizerFactory.create_visualizer(output_format)
         self.filesOrganizer = FilesOrganizer(directories)
@@ -19,7 +20,7 @@ class MainApp:
         elif self.output_format == 'set':
             self.plotter.show_plots_set(files_SanoFemale)
         elif self.output_format == 'boxplot':
-            self.plotter.peaks_count_boxplot(self.algorithm, self.measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
+            self.plotter.peaks_count_boxplot(self.algorithm, self.measure, self.yTitle, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
 
 
 """
@@ -42,6 +43,6 @@ Medida usada para calcular
 """
 if __name__ == "__main__":
     app = MainApp(directories=['../Organizados2/Sano/female', '../Organizados2/No_Sano/female',
-                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="max_peak_value", measure="Acceleration")
+                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="max_peak_value", measure="Acceleration", yTitle="Valor del pico mas alto")
     app.run()
 

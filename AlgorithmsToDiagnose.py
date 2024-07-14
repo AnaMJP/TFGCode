@@ -96,6 +96,10 @@ class AlgorithmsToDiagnose:
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
             age_group = (int(age) // 4) * 4
+
+            if age_group >= 18:
+                continue
+
             try:
                 if measure == "Velocity":
                     indice_maximo = np.where(Vt[start:end] == Vt[start:end].max())[0][0]
@@ -123,6 +127,10 @@ class AlgorithmsToDiagnose:
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
             age_group = (int(age) // 4) * 4
+
+            if age_group >= 18:
+                continue
+
             try:
                 if measure == "Velocity":
                     indice_maximo = Vt[start:end].max()

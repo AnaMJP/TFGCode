@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from DataProcessor import DataProcessor
 from AlgorithmsToDiagnose import AlgorithmsToDiagnose
-from ANOVA import ANOVA
+from StatisticsMethods import StatisticsMethods
 from AlgorithmFactory import *
 
 class PlotBoxPlot:
@@ -10,7 +10,7 @@ class PlotBoxPlot:
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
         self.processor = DataProcessor()
         self.diagnose = AlgorithmsToDiagnose()
-        self.anova = ANOVA()
+        self.anova = StatisticsMethods()
 
 
     def plot_data(self, peak_counts_list, titles):
@@ -43,7 +43,7 @@ class PlotBoxPlot:
         plt.show()
         plt.close(fig)  # Cerrar la figura actual
 
-    def plot_comparison_by_age(self, peak_counts_list, titles, ylim, genders):
+    def plot_comparison_by_age(self, peak_counts_list, titles, ylim, genders, yTitle):
         plt.close('all')
         for peak_list, title, gender in zip(peak_counts_list, titles, genders):
             ages = sorted(
@@ -57,28 +57,34 @@ class PlotBoxPlot:
                         peak_list]
 
                 # Mostrar el boxplot con medias
-                boxplot = ax.boxplot(data, patch_artist=True, notch=True, vert=True, showmeans=True)
+                boxplot = ax.boxplot(data, vert=True, showmeans=True, medianprops={'color':'orange', 'linewidth': 3})
 
-                ax.set_title(f'{gender}, edad: {age} - {age+3}')
+                ax.set_title(f'{gender}, edad: {age} - {age+3}', fontsize=19)
                 if ax == axs[0]:
-                    ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
-                ax.set_xticklabels(title, rotation=45, ha='right', fontsize=10)
+                    ax.set_ylabel(yTitle, fontsize=18)
+                ax.set_xticklabels(title, rotation=45, ha='right', fontsize=19)
                 ax.set_ylim(top=ylim, bottom=0)
+                ax.tick_params(axis="y", which='major', labelsize=16)
 
-                # Calcular y mostrar los valores de la media, mediana y el número de archivos sobre cada boxplot
+                # Calcular y mostrar los valores de la media y el número de archivos sobre cada boxplot
                 means = [np.mean(d) if len(d) > 0 else 0 for d in data]
-                medians = [np.median(d) if len(d) > 0 else 0 for d in data]
                 file_counts = [len(d) for d in data]
 
-                for mean, median, count, xpos in zip(means, medians, file_counts, range(1, len(title) + 1)):
-                    ax.text(xpos, median, f' {median:.2f}', ha='center', va='top', color='orange')
-                    ax.text(xpos, ax.get_ylim()[0] + 0.1, f'n={count}', ha='center', va='bottom', fontsize=10, color='blue')
+                for mean, count, xpos in zip(means, file_counts, range(1, len(title) + 1)):
+                    ax.text(xpos, ax.get_ylim()[0] + 0.1, f'Nº datos={count}', ha='center', va='bottom', fontsize=16, color='blue')
+                handles = [
+                    plt.Line2D([0], [0], color='w', marker='^', markeredgecolor='green', markerfacecolor='green',
+                               markersize=10, label='Media'),
+                    plt.Line2D([0], [0], color='w', marker='_', markeredgecolor='orange', markerfacecolor='orange',
+                               markersize=10, label='Mediana', linewidth=4)
+                ]
+                ax.legend(handles=handles, loc='upper right', fontsize=17)
 
             plt.tight_layout()
             plt.show()
             plt.close(fig)
 
-    def peaks_count_boxplot(self, algorithm, measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
+    def peaks_count_boxplot(self, algorithm, measure, yTitle, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
         counts_list = []
         titles = []
         genders = []
@@ -105,8 +111,10 @@ class PlotBoxPlot:
             genders.append('Masculino')
 
         if len(counts_list) != 0:
-            self.anova.perform_anova_on_peak_counts(counts_list)
-            self.plot_comparison_by_age(counts_list, titles, ylim, genders)
+            #self.anova.check_normality(counts_list)
+            #self.anova.check_homogeneity_of_variance(counts_list)
+            self.anova.perform_Mann_Whitney_U_tests(counts_list)
+            self.plot_comparison_by_age(counts_list, titles, ylim, genders, yTitle)
         else:
             print("No data")
 

@@ -22,7 +22,7 @@ class PeaksCountAlgorithm:
         counts_NoSanoFemale = self.diagnose.get_peak_counts(files_NoSanoFemale, measure)
         counts_SanoMale = self.diagnose.get_peak_counts(files_SanoMale, measure)
         counts_NoSanoMale = self.diagnose.get_peak_counts(files_NoSanoMale, measure)
-        ylim = 50
+        ylim = 25
         return counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim
 class PeaksCountPerSecondsAlgorithm:
     def __init__(self, diagnose):
@@ -32,7 +32,7 @@ class PeaksCountPerSecondsAlgorithm:
         counts_NoSanoFemale = self.diagnose.get_peak_counts_per_seconds(files_NoSanoFemale, measure)
         counts_SanoMale = self.diagnose.get_peak_counts_per_seconds(files_SanoMale, measure)
         counts_NoSanoMale = self.diagnose.get_peak_counts_per_seconds(files_NoSanoMale, measure)
-        ylim = 50
+        ylim = 35
         return counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim
 
 class DurationCountsAlgorithm:
