@@ -15,7 +15,7 @@ class MainApp:
     def run(self):
         files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale = self.filesOrganizer.organize_by_gender()
         if self.output_format == 'fig':
-            self.plotter.show_plots(files_SanoMale)
+            self.plotter.show_plots(files_NoSanoMale)
         elif self.output_format == 'set':
             self.plotter.show_plots_set(files_SanoFemale)
         elif self.output_format == 'boxplot':
@@ -29,10 +29,11 @@ output_format:
     * set
 Algorithms:
 Parámetro a aplicar para ver las diferencias
-    * peak_count: Numero de picos
+    * peaks_count: Numero de picos
     * peaks_count_per_seconds: Numero de picos por tiempo de ejecucion
     * duration_counts: tiempo total de ejecución
     * time_to_max_peak: tiempo desde que se empieza al pico mas alto
+    * max_peak_value: valor del pico mas alto
     
 Measure: 
 Medida usada para calcular
@@ -41,6 +42,6 @@ Medida usada para calcular
 """
 if __name__ == "__main__":
     app = MainApp(directories=['../Organizados2/Sano/female', '../Organizados2/No_Sano/female',
-                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="duration_counts", measure="Velocity")
+                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="max_peak_value", measure="Acceleration")
     app.run()
 

@@ -48,11 +48,14 @@ class DataProcessor:
         Vy -= np.mean(Vy)
         Vz -= np.mean(Vz)
 
-        Vt = np.sqrt((np.diff(Vx) / np.diff(self.t)) ** 2 + (np.diff(Vy) / np.diff(self.t)) ** 2 + (np.diff(Vz) / np.diff(self.t)) ** 2)
+        diff_t = np.diff(self.t)
+        diff_t[diff_t == 0] = np.nan #evitamos division entre 0
+
+        Vt = np.sqrt(np.nan_to_num(np.diff(Vx) / diff_t) ** 2 + np.nan_to_num(np.diff(Vy) / diff_t) ** 2 + np.nan_to_num(np.diff(Vz) / diff_t) ** 2)
 
 
-        filtered_Vt = np.sqrt((np.diff(filtered_Vx) / np.diff(self.t)) ** 2 + (np.diff(filtered_Vy) / np.diff(self.t)) ** 2 + (
-                    np.diff(filtered_Vz) / np.diff(self.t)) ** 2)
+        filtered_Vt = np.sqrt(np.nan_to_num(np.diff(filtered_Vx) / diff_t) ** 2 + np.nan_to_num(np.diff(filtered_Vy) / diff_t) ** 2 + np.nan_to_num(
+                    np.diff(filtered_Vz) / diff_t) ** 2)
 
         return self.t, Vt, filtered_Vt
 

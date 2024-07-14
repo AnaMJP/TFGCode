@@ -87,7 +87,7 @@ class AlgorithmsToDiagnose:
 
         return duration_per_age_group
 
-    def time_from_start_to_maxPeak(self, files):
+    def time_from_start_to_maxPeak(self, files, measure):
         time_to_max_peak = {}
         for file in files:
             t, A, filtered_A = self.processor.calculate_acceleration(file)
@@ -95,14 +95,48 @@ class AlgorithmsToDiagnose:
 
             start, end = self.analyzer.cut_data_max_value(filtered_A, t)
             age = self.extract_age_from_filename(file)
-            age_group = (int(age) // 2) * 2
+            age_group = (int(age) // 4) * 4
+            try:
+                if measure == "Velocity":
+                    indice_maximo = np.where(Vt[start:end] == Vt[start:end].max())[0][0]
+                elif measure == "Acceleration":
+                    indice_maximo = np.where(A[start:end] == A[start:end].max())[0][0]
+                else:
+                    raise ValueError("Medida no válida. Debe ser 'Acceleration' o 'Velocity'.")
+            except:
+                print(f'Falló al analizar: {file}')
 
-            indice_maximo = np.where(A == A.max())[0][0]
             time_to_peak = np.abs(t[indice_maximo] - t[start])
 
             if age_group not in time_to_max_peak:
                 time_to_max_peak[age_group] = []
             time_to_max_peak[age_group].append(time_to_peak)
+
+        return time_to_max_peak
+
+    def maxPeak_value(self, files, measure):
+        time_to_max_peak = {}
+        for file in files:
+            t, A, filtered_A = self.processor.calculate_acceleration(file)
+            t, Vt, filtered_Vt = self.processor.calculate_velocity(file)
+
+            start, end = self.analyzer.cut_data_max_value(filtered_A, t)
+            age = self.extract_age_from_filename(file)
+            age_group = (int(age) // 4) * 4
+            try:
+                if measure == "Velocity":
+                    indice_maximo = Vt[start:end].max()
+                elif measure == "Acceleration":
+                    indice_maximo = A[start:end].max()
+                else:
+                    raise ValueError("Medida no válida. Debe ser 'Acceleration' o 'Velocity'.")
+            except:
+                print(f'Falló al analizar: {file}')
+
+
+            if age_group not in time_to_max_peak:
+                time_to_max_peak[age_group] = []
+            time_to_max_peak[age_group].append(indice_maximo)
 
         return time_to_max_peak
 

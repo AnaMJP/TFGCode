@@ -34,7 +34,9 @@ class DataAnalyzer:
                 inicio = indice_maximo - i
                 break
         for i, valor in enumerate(filtered_A[indice_maximo:]):
-            if -1 <= valor <= 1:
+            if -1 <= valor <= 1 or (indice_maximo + i) == 299:
                 fin = indice_maximo + i
                 break
+
+
         return inicio, fin

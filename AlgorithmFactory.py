@@ -9,6 +9,8 @@ class AlgorithmFactory:
             return DurationCountsAlgorithm(diagnose)
         elif algorithm_type == "time_to_max_peak":
             return TimeToMaxPeak(diagnose)
+        elif algorithm_type == "max_peak_value":
+            return MaxPeakValue(diagnose)
         else:
             raise ValueError(f"Tipo de algoritmo no válido: {algorithm_type}")
 
@@ -48,11 +50,22 @@ class TimeToMaxPeak:
     def __init__(self, diagnose):
         self.diagnose = diagnose
     def execute(self, measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
-        counts_SanoFemale = self.diagnose.time_from_start_to_maxPeak(files_SanoFemale)
-        counts_NoSanoFemale = self.diagnose.time_from_start_to_maxPeak(files_NoSanoFemale)
-        counts_SanoMale = self.diagnose.time_from_start_to_maxPeak(files_SanoMale)
-        counts_NoSanoMale = self.diagnose.time_from_start_to_maxPeak(files_NoSanoMale)
-        ylim = 1
+        counts_SanoFemale = self.diagnose.time_from_start_to_maxPeak(files_SanoFemale, measure)
+        counts_NoSanoFemale = self.diagnose.time_from_start_to_maxPeak(files_NoSanoFemale, measure)
+        counts_SanoMale = self.diagnose.time_from_start_to_maxPeak(files_SanoMale, measure)
+        counts_NoSanoMale = self.diagnose.time_from_start_to_maxPeak(files_NoSanoMale, measure)
+        ylim = 3
+        return counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim
+
+class MaxPeakValue:
+    def __init__(self, diagnose):
+        self.diagnose = diagnose
+    def execute(self, measure, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale):
+        counts_SanoFemale = self.diagnose.maxPeak_value(files_SanoFemale, measure)
+        counts_NoSanoFemale = self.diagnose.maxPeak_value(files_NoSanoFemale, measure)
+        counts_SanoMale = self.diagnose.maxPeak_value(files_SanoMale, measure)
+        counts_NoSanoMale = self.diagnose.maxPeak_value(files_NoSanoMale, measure)
+        ylim = 30
         return counts_SanoFemale, counts_NoSanoFemale, counts_SanoMale, counts_NoSanoMale, ylim
 
 

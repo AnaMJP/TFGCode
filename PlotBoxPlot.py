@@ -59,7 +59,7 @@ class PlotBoxPlot:
                 # Mostrar el boxplot con medias
                 boxplot = ax.boxplot(data, patch_artist=True, notch=True, vert=True, showmeans=True)
 
-                ax.set_title(f'{gender}, edad: {age} - {age+4}')
+                ax.set_title(f'{gender}, edad: {age} - {age+3}')
                 if ax == axs[0]:
                     ax.set_ylabel('Numero de picos por tiempo ejecución', fontsize=12)
                 ax.set_xticklabels(title, rotation=45, ha='right', fontsize=10)

@@ -26,7 +26,7 @@ class PlotFigure:
         self.create_vel_subplots(n_files // 2 + 1, 2, '')
         idx = 0
         for file_name in files:
-            self.process_file_subplot(file_name, idx)
+            self.process_file_subplot("../Organizados2/Sano/female\8\\23000049_8_F\D_C_23000049_L_child__1_119_LPM_2024_03_06_12_50_03_T1_1.csv", idx)
             idx += 1
         self.show()
 
