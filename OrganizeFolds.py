@@ -10,7 +10,7 @@ def organizar_archivos(origen, destino):
         directorio_path = os.path.join(origen, directorio)
         flagSano = False
         print(directorio_path)
-        if directorio_path.split("\\")[-1].index('0') == 0:
+        if directorio_path.split("\\")[-1].startswith('0'):
             flagSano = True
             print("Sano " + directorio_path)
 

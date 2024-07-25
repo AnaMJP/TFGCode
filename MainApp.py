@@ -16,11 +16,13 @@ class MainApp:
     def run(self):
         files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale = self.filesOrganizer.organize_by_gender()
         if self.output_format == 'fig':
-            self.plotter.show_plots(files_NoSanoMale)
+            self.plotter.show_plots(files_SanoFemale)
         elif self.output_format == 'set':
             self.plotter.show_plots_set(files_SanoFemale)
         elif self.output_format == 'boxplot':
             self.plotter.peaks_count_boxplot(self.algorithm, self.measure, self.yTitle, files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
+        if self.output_format == 'ImgFig':
+            self.plotter.show_plots(files_SanoFemale, files_NoSanoFemale, files_SanoMale, files_NoSanoMale)
 
 
 """
@@ -28,6 +30,7 @@ output_format:
     * fig
     * boxplot
     * set
+    * ImgFig
 Algorithms:
 Parámetro a aplicar para ver las diferencias
     * peaks_count: Numero de picos
@@ -42,7 +45,7 @@ Medida usada para calcular
     * Velocity
 """
 if __name__ == "__main__":
-    app = MainApp(directories=['../Organizados2/Sano/female', '../Organizados2/No_Sano/female',
-                               '../Organizados2/Sano/male', '../Organizados2/No_Sano/male'], output_format='boxplot', algorithm="max_peak_value", measure="Acceleration", yTitle="Valor del pico mas alto")
+    app = MainApp(directories=['../Organizados/Sano/female', '../Organizados/No_Sano/female',
+                               '../Organizados/Sano/male', '../Organizados/No_Sano/male'], output_format='boxplot', algorithm="max_peak_value", measure="Acceleration", yTitle="Máxima aceleración alcanzada")
     app.run()
 

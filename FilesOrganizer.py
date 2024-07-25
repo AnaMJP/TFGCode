@@ -13,13 +13,13 @@ class FilesOrganizer:
         for directory in self.directories:
             for subdir, _, file_names in os.walk(directory):
                 for file_name in file_names:
-                    if directory == '../Organizados2/Sano/female':
+                    if directory == '../Organizados/Sano/female':
                         files_SanoFemale.append(os.path.join(subdir, file_name))
-                    elif directory == '../Organizados2/No_Sano/female':
+                    elif directory == '../Organizados/No_Sano/female':
                         files_NoSanoFemale.append(os.path.join(subdir, file_name))
-                    elif directory == '../Organizados2/Sano/male':
+                    elif directory == '../Organizados/Sano/male':
                         files_SanoMale.append(os.path.join(subdir, file_name))
-                    elif directory == '../Organizados2/No_Sano/male':
+                    elif directory == '../Organizados/No_Sano/male':
                         files_NoSanoMale.append(os.path.join(subdir, file_name))
 
         filtered_files_SanoFemale = [file for file in files_SanoFemale if "_L_" in file and self.analyzer.max_value(file)]

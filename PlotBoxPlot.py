@@ -70,8 +70,6 @@ class PlotBoxPlot:
                 means = [np.mean(d) if len(d) > 0 else 0 for d in data]
                 file_counts = [len(d) for d in data]
 
-                for mean, count, xpos in zip(means, file_counts, range(1, len(title) + 1)):
-                    ax.text(xpos, ax.get_ylim()[0] + 0.1, f'Nº datos={count}', ha='center', va='bottom', fontsize=16, color='blue')
                 handles = [
                     plt.Line2D([0], [0], color='w', marker='^', markeredgecolor='green', markerfacecolor='green',
                                markersize=10, label='Media'),

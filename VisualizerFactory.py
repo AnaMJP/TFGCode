@@ -1,6 +1,7 @@
 from PlotFigure import PlotFigure
 from PlotBoxPlot import PlotBoxPlot
 from PlotFigureSet import PlotFigureSet
+from ExportFigureAsImage import ExportFigureAsImage
 class VisualizerFactory:
     @staticmethod
     def create_visualizer(output_format):
@@ -10,6 +11,8 @@ class VisualizerFactory:
             return PlotBoxPlot()
         elif output_format == 'set':
             return PlotFigureSet()
+        elif output_format == 'ImgFig':
+            return ExportFigureAsImage()
         else:
             print("Tipo de representación incorrecto, opciones: fig, set y boxplot.")
             return

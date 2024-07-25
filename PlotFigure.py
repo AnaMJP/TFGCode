@@ -19,14 +19,14 @@ class PlotFigure:
             folder = os.path.dirname(file)
             if folder not in first_files_per_folder:
                 first_files_per_folder[folder] = file
-        files = list(first_files_per_folder.values())[:8]
+        files = list(first_files_per_folder.values())[:4]
 
         n_files = len(files)
         self.create_acc_subplots(n_files // 2 + 1, 2, '')
         self.create_vel_subplots(n_files // 2 + 1, 2, '')
         idx = 0
         for file_name in files:
-            self.process_file_subplot("../Organizados2/Sano/female\8\\23000049_8_F\D_C_23000049_L_child__1_119_LPM_2024_03_06_12_50_03_T1_1.csv", idx)
+            self.process_file_subplot('C:/Users/anam0/Desktop/TFT/Codigo/Organizados/Sano/male/10/25000010_10_M/D_C_25000010_L_child__1_103_LPM_2024_01_24_12_58_34_T1_1.csv', idx)
             idx += 1
         self.show()
 
@@ -47,9 +47,9 @@ class PlotFigure:
         row, col = divmod(idx, 2)
         self.plot_data(t, filtered_A, A, "", start=inicio, end=fin, ax=self.acc_axs[row, col])
 
-        peak_indices = self.analyzer.show_peaks(A[inicio:fin])
-        self.acc_axs[row, col].plot(t[inicio:fin][peak_indices], A[inicio:fin][peak_indices], 'ro',
-                                            markersize=5)
+        #peak_indices = self.analyzer.show_peaks(A[inicio:fin])
+        #self.acc_axs[row, col].plot(t[inicio:fin][peak_indices], A[inicio:fin][peak_indices], 'ro',
+                                            #markersize=5)
 
         t, Vt, filtered_Vt = self.processor.calculate_velocity(file_name)
 
