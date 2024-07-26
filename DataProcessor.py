@@ -1,20 +1,69 @@
 import numpy as np
 import scipy.integrate as integrate
+from DataLoader import DataLoader
+from DataFilter import DataFilter
 
 class DataProcessor:
-    def calculate_velocity(self, t, A1, A2, A3):
-        Vx = integrate.cumtrapz(A1, t, initial=0)
-        Vy = integrate.cumtrapz(A2, t, initial=0)
-        Vz = integrate.cumtrapz(A3, t, initial=0)
+
+    def __init__(self, cutoff_frequency=0.95, fs=10.0):
+        self.t = []
+        self.A1 = []
+        self.A2 = []
+        self.A3 = []
+        self.g = []
+
+        self.filtered_A1 = []
+        self.filtered_A2 = []
+        self.filtered_A3 = []
+        self.filtered_A = []
+        self.A = []
+
+        self.loader = DataLoader()
+        self.filter = DataFilter(cutoff_frequency, fs)
+
+
+    def process_file_data(self, file_name):
+        data = self.loader.load_data(file_name)
+        self.t = data[:, 0] - data[0, 0]
+        self.A1 = np.abs(data[:, 1])
+        self.A2 = np.abs(data[:, 2])
+        self.A3 = np.abs(data[:, 3])
+        self.g = data[:, 8]
+
+        self.filtered_A1 = self.filter.butter_lowpass_filter(self.A1)
+        self.filtered_A2 = self.filter.butter_lowpass_filter(self.A2)
+        self.filtered_A3 = self.filter.butter_lowpass_filter(self.A3)
+
+
+    def calculate_velocity(self, file_name):
+        self.process_file_data(file_name)
+        Vx = integrate.cumtrapz(self.A1, self.t, initial=0)
+        Vy = integrate.cumtrapz(self.A2, self.t, initial=0)
+        Vz = integrate.cumtrapz(self.A3, self.t, initial=0)
+        filtered_Vx = integrate.cumtrapz(self.filtered_A1, self.t, initial=0)
+        filtered_Vy = integrate.cumtrapz(self.filtered_A2, self.t, initial=0)
+        filtered_Vz = integrate.cumtrapz(self.filtered_A3, self.t, initial=0)
 
         Vx -= np.mean(Vx)
         Vy -= np.mean(Vy)
         Vz -= np.mean(Vz)
 
-        return Vx, Vy, Vz
+        diff_t = np.diff(self.t)
+        diff_t[diff_t == 0] = np.nan #evitamos division entre 0
 
-    def calculate_acceleration(self, t, filtered_A1, filtered_A2, filtered_A3):
-        filtered_A = filtered_A1 + filtered_A2 + filtered_A3
-        return filtered_A
+        Vt = np.sqrt(np.nan_to_num(np.diff(Vx) / diff_t) ** 2 + np.nan_to_num(np.diff(Vy) / diff_t) ** 2 + np.nan_to_num(np.diff(Vz) / diff_t) ** 2)
+
+
+        filtered_Vt = np.sqrt(np.nan_to_num(np.diff(filtered_Vx) / diff_t) ** 2 + np.nan_to_num(np.diff(filtered_Vy) / diff_t) ** 2 + np.nan_to_num(
+                    np.diff(filtered_Vz) / diff_t) ** 2)
+
+        return self.t, Vt, filtered_Vt
+
+    def calculate_acceleration(self, file_name):
+        self.process_file_data(file_name)
+        self.A = self.A1 + self.A2 + self.A3
+        self.filtered_A = self.filtered_A1 + self.filtered_A2 + self.filtered_A3
+
+        return self.t, self.A, self.filtered_A
 
 
